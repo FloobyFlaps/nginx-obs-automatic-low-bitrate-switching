@@ -351,7 +351,21 @@ class Chat {
 
     async switch(sceneName) {
         if (sceneName == null) return this.say(this.locale.switch.error);
-
+        if (sceneName === '1') {
+            this.obsProps.allowSwitch = true;
+            return this.say(
+                format(this.locale.switch.success, {
+                    scene: 'Auto-Switch on'
+                })
+            );
+        } else if (sceneName === '0') {
+            this.obsProps.allowSwitch = false;
+            return this.say(
+                format(this.locale.switch.success, {
+                    scene: 'Auto-Switch off'
+                })
+            );
+        }
         const res = search(sceneName, this.obsProps.scenes, { keySelector: obj => obj.name });
         const scene = res.length > 0 ? res[0].name : sceneName;
 

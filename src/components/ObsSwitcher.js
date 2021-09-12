@@ -34,6 +34,7 @@ class ObsSwitcher extends EventEmitter {
         this.offlineScene = offline;
         this.lowBitrateTrigger = lowBitrateTrigger;
         this.highRttTrigger = highRttTrigger;
+        this.backupScene = offline;
         this.bitrate = null;
         this.nginxVideoMeta = null;
         this.streamStatus = null;
@@ -43,6 +44,7 @@ class ObsSwitcher extends EventEmitter {
         this.nginxSettings;
         this.previousScene = this.lowBitrateScene;
         this.scenes = null;
+        this.allowSwitch = true;
 
         this.obs
             .connect({ address: this.address, password: this.password })
@@ -76,6 +78,7 @@ class ObsSwitcher extends EventEmitter {
 
         if (bitrate !== null) {
             this.isLive = true;
+            this.backupScene = this.lowBitrateScene;
 
             if (["nimble", "srt-live-server"].includes(config.rtmp.server)) {
                 this.isLive &&
@@ -336,6 +339,7 @@ class ObsSwitcher extends EventEmitter {
         this.obsStreaming = false;
         this.nginxVideoMeta = null;
         this.bitrate = null;
+        this.offlineScene = this.backupScene;
 
         const { canSwitch } = await this.canSwitch();
 
@@ -373,7 +377,7 @@ class ObsSwitcher extends EventEmitter {
 
         this.currentScene = currentScene.name;
 
-        return { currentScene, canSwitch };
+        return { currentScene, canSwitch: canSwitch && this.allowSwitch };
     }
 }
 
